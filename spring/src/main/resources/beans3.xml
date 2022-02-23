@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+
+    <!--全自动-->
+    <!--1.目标类-->
+    <bean id="userService" class="com.javacto.day3.b_qzd.UserServiceImpl"></bean>
+    <!--2.切面类-->
+    <bean id="myAspect" class="com.javacto.day3.b_qzd.MyAspect"></bean>
+    <!--3.aop编程  aop:config
+                 proxy-target-class="true" 声明时使用cglib代理
+        -->
+    <aop:config proxy-target-class="true">
+        <!--  aop:advisor 特殊的切面类
+                        advice-ref="myAspect"  切入类引用
+                        pointcut切入点  addUser() 我就只想把这一个方法  加上通知
+                        execution(*  需要哪个方法加入通知) 切入点表达式
+                        execution(* com.javacto.day03.b_qzd.*.*(..))
+                        execution(返回值任意 com.javacto.day03.b_qzd.所有类.所有类中方法(参数任意))
+                -->
+        <!--声明切入点-->
+        <aop:pointcut id="scanAll" expression="execution(* com.javacto.day3.b_qzd.*.*(..))"/>
+        <aop:advisor advice-ref="myAspect" pointcut-ref="scanAll"></aop:advisor>
+    </aop:config>
+
+    <!--&lt;!&ndash;半自动&ndash;&gt;
+    &lt;!&ndash; 1.目标类&ndash;&gt;
+    <bean id="userService" class="com.javacto.day3.a_bzd.UserServiceImpl"></bean>
+    &lt;!&ndash; 2.切面类&ndash;&gt;
+    <bean id="myAspect" class="com.javacto.day3.a_bzd.MyAspect"></bean>
+    &lt;!&ndash;3代理类， 交给spring来管理
+                interfaces 确定接口们  value="com.javacto.day03.a_bzd.UserServcie"
+                 如果有多个接口，则使用数组
+                target  确定目标类
+                interceptorNames 通知类
+               底层机制：
+                        如果目标类有接口：采用jdk动态代理
+                        如果没有接口：采用的是cglib字节码增强
+                        如果声明  optimize =true 无论是否有接口，者采用 cglib
+        &ndash;&gt;
+    <bean id="proxyFactoryBean" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="interfaces" value="com.javacto.day3.a_bzd.UserService"></property>
+        <property name="target" ref="userService"></property>
+        <property name="interceptorNames" value="myAspect"></property>
+    </bean>-->
+</beans>

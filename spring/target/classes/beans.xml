@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--之前没有使用spring之前需要new对象
+        UserServcie userServcie = new UserServcieImpl();
+            今天学了spring之后，不需要再new对象了，直接交给spring来管理
+        -->
+    <!--配置bean
+            class 哪个类需要交给spring来管理
+            id 用于从spring容器获取对象时候使用的，必需代表唯一
+    -->
+    <!--ioc-->
+    <bean id="userServcieId" class="com.javacto.day1.a_ioc.UserServiceImpl"></bean>
+
+    <!--di依赖注入-->
+    <bean id="userDaoId" class="com.javacto.day1.b_di.UserDaoImpl"></bean>
+    <!--业务层  需要注入  dao层-->
+    <bean id="userServiceId" class="com.javacto.day1.b_di.UserServiceImpl">
+        <property name="userDao" ref="userDaoId"></property>
+    </bean>
+    <!--控制层  需要注入  业务层-->
+    <bean id="userActionId" class="com.javacto.day1.b_di.UserAction">
+        <!--我的UserAction 中有userServcie属性需要注入
+            ref我需要把哪个类注入给我 就是引用谁-->
+        <property name="userService" ref="userServiceId"></property>
+    </bean>
+
+    <!--基于xml -->
+    <bean id="userService" class="com.javacto.day1.c_constructor.UserServiceImpl"></bean>
+
+    <!--  静态工厂交给spring管理-->
+    <bean id="staticFactoryBean" class="com.javacto.day1.d_static_factory.StaticFactoryBean" factory-method="createUserService"></bean>
+
+    <!--实例工厂交给spring
+         //1.实例工程必需先选择  工程对象
+        FactoryBean factoryBean = new FactoryBean();
+        //2.通过工厂拿到对象
+        UserServcie userServcie= factoryBean.createUserServcie();
+    -->
+    <bean id="factoryBean" class="com.javacto.day1.e_factory_bean.FactoryBean"></bean>
+    <bean id="userServcieId_factory" factory-bean="factoryBean" factory-method="createUserService"></bean>
+
+    <!--set注入值-->
+    <bean id="user" class="com.javacto.day1.f_setter.User">
+        <!--给普通性注入值-->
+        <property name="id" value="11"></property>
+        <property name="name" value="张三"></property>
+        <property name="lists">
+            <!--给集合注入-->
+            <array>
+                <value>1111</value>
+                <value>2222</value>
+                <value>333</value>
+            </array>
+        </property>
+        <property name="sts">
+            <list>
+                <value>111</value>
+                <value>222</value>
+                <value>333</value>
+            </list>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="key1" value="值1"></entry>
+                <entry key="key2" value="值2"></entry>
+            </map>
+        </property>
+        <!--User需要引用 userVo-->
+        <property name="userVo" ref="userVo"></property>
+    </bean>
+    <bean id="userVo" class="com.javacto.day1.f_setter.UserVo">
+        <property name="id2" value="1111"></property>
+        <property name="name2" value="大"></property>
+    </bean>
+
+    <!--<bean id="user2" class="com.javacto.day1.f_setter.User">
+        <constructor-arg index="0" value="12"></constructor-arg>
+        <constructor-arg index="1" value="贝贝"></constructor-arg>
+    </bean>-->
+</beans>
